@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"io/ioutil"
 	"os"
 )
@@ -30,14 +31,25 @@ func init() {
 	}
 }
 
+var input *string = flag.String("in", "./123.txt", "Use -in <input filePath>")
+var output *string = flag.String("out", "", "Use -out <output filePath>")
 func main() {
-	file, err := os.Open("./123.txt")
+	flag.Parse()
+	file, err := os.Open(*input)
 	CheckErrorForExitOfMsg(err, "Error for open file ")
 	bytes, err := ioutil.ReadAll(file)
 	//fmt.Println(string(bytes))
 	CheckErrorForExitOfMsg(err, "Error for ReadAll file", file.Name())
 	bytes = FilterResource(bytes)
-	ParseFile(bytes,os.Stdout)
+	if len(*output) == 0 {
+		ParseFile(bytes,os.Stdout)
+	} else {
+		createFile, err := os.Create(*output)
+		CheckErrorOfMsg(err, "Error for CreateFile :")
+		ParseFile(bytes,createFile)
+	}
+
+
 }
 
 
