@@ -1,6 +1,9 @@
 package main
 
-import "os"
+import (
+	"io/ioutil"
+	"os"
+)
 
 var ReserveWordMap = make(map[string]int)
 var OperatorOrDelimiterMap = make(map[string]int)
@@ -28,5 +31,13 @@ func init() {
 }
 
 func main() {
-	file, e := os.Open()
+	file, err := os.Open("./123.txt")
+	CheckErrorForExitOfMsg(err, "Error for open file ")
+	bytes, err := ioutil.ReadAll(file)
+	//fmt.Println(string(bytes))
+	CheckErrorForExitOfMsg(err, "Error for ReadAll file", file.Name())
+	bytes = FilterResource(bytes)
+	ParseFile(bytes,os.Stdout)
 }
+
+
