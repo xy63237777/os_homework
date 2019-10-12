@@ -16,6 +16,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < MAX_THREAD; i++) {
           rth = pthread_create(&pthread_id[i],0,thread_worker,&i);
     }
+    printf("create thread finish pid : %d\n",getpid());
     do {
 		unsigned long long sum = 0;
 		for (i = 0; i < MAX_THREAD; i++) {
@@ -29,8 +30,6 @@ int main(int argc, char* argv[]) {
 }
    
 void* thread_worker(void* p) {
-    printf("worker invoke...\n");
-
     int thread_num;
 	thread_num = *((int *)p);
     for(;;) {
