@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"regexp"
@@ -20,6 +20,7 @@ func SearchReserve(str string) int {
 }
 
 func SearchOperatorOrDelimiter(str string) int  {
+
 	i, ok := OperatorOrDelimiterMap[str]
 	if ok {
 		return i

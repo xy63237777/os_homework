@@ -1,6 +1,8 @@
 package main
 
 import (
+	"CPro/core"
+	"CPro/files"
 	"flag"
 	"io/ioutil"
 	"os"
@@ -36,17 +38,17 @@ var output *string = flag.String("out", "", "Use -out <output filePath>")
 func main() {
 	flag.Parse()
 	file, err := os.Open(*input)
-	CheckErrorForExitOfMsg(err, "Error for open file ")
+	core.CheckErrorForExitOfMsg(err, "Error for open file ")
 	bytes, err := ioutil.ReadAll(file)
 	//fmt.Println(string(bytes))
-	CheckErrorForExitOfMsg(err, "Error for ReadAll file", file.Name())
-	bytes = FilterResource(bytes)
+	core.CheckErrorForExitOfMsg(err, "Error for ReadAll file", file.Name())
+	bytes = files.FilterResource(bytes)
 	if len(*output) == 0 {
-		ParseFile(bytes,os.Stdout)
+		files.ParseFile(bytes,os.Stdout)
 	} else {
 		createFile, err := os.Create(*output)
-		CheckErrorOfMsg(err, "Error for CreateFile :")
-		ParseFile(bytes,createFile)
+		core.CheckErrorOfMsg(err, "Error for CreateFile :")
+		files.ParseFile(bytes,createFile)
 	}
 }
 
