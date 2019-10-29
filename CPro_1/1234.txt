@@ -1,0 +1,170 @@
+
+            package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+var SourceNumber int //资源数大小
+var ProNumber int //进程数大小
+
+//进程资源
+type ProSource struct {
+	MaxSource []int
+	Allocation []int
+	Need []int
+
+}
+
+func NewProInfo(maxSource []int, allocation []int, need []int) *ProSource {
+	return &ProSource{
+		MaxSource:  maxSource,
+		Allocation: allocation,
+		Need:       need,
+	}
+}
+
+//是否可以申请资源
+func (p * ProSource) getSourceForSuccess(sources []int)  bool {
+	for i := 0; i < len(sources); i++ {
+		if p.Need[i] > sources[i] {
+			return false
+		}
+	}
+	return true
+}
+
+var ProSources []*ProSource
+var OsSources []int
+
+func sourceInput(num1, num2 int) [][]int {
+	arr := make([][]int, num1)
+	for i := 0; i < num1; i++ {
+		arr[i] = make([]int, num2)
+		for j := 0; j < num2; j++ {
+			_, err := fmt.Scan(&arr[i][j])
+			CheckErrorForExitOfMsg(err, "input Source error : ")
+		}
+	}
+	return arr
+}
+
+
+
+func init() {
+
+	fmt.Println("input SourceNumber")
+	_, err := fmt.Scan(&SourceNumber)
+	CheckErrorForExitOfMsg(err, " input SourceNumber error : ")
+	OsSources = make([]int, SourceNumber)
+	for i := 0; i < SourceNumber ; i++ {
+		_, err := fmt.Scan(&OsSources[i])
+		CheckErrorForExitOfMsg(err, " input OsSources ", i, " error : ")
+	}
+	fmt.Println("input ProNumber")
+	_, err = fmt.Scan(&ProNumber)
+	CheckErrorForExitOfMsg(err, " input ProNumber error :")
+	ProSources = make([]*ProSource, ProNumber)
+	fmt.Println("input every pro's maxNeed")
+	max := sourceInput(ProNumber, SourceNumber)
+	fmt.Println("input every pro's allocation")
+	allocation := sourceInput(ProNumber, SourceNumber)
+	need := make([][]int, ProNumber)
+	for  i := 0; i < ProNumber; i++ {
+		need[i] = make([]int, SourceNumber)
+		for j := 0; j < SourceNumber; j++ {
+			need[i][j] = max[i][j] - allocation[i][j]
+			OsSources[j] -= allocation[i][j]
+			if OsSources[j] < 0 {
+				CheckErrorForExit(errors.New("error: for os i want have more sources"))
+			}
+		}
+		ProSources[i] = NewProInfo(max[i], allocation[i], need[i])
+	}
+
+
+}
+
+func mergeForOsSource(sources []int)  {
+	for i := 0; i < len(OsSources); i++ {
+		OsSources[i] += sources[i]
+	}
+}
+
+func checkSecurity() (bool, []int) {
+	book := make([]bool, ProNumber)
+	queue := make([]int, ProNumber)
+	reCmp := true
+	count := 0
+	for ; reCmp;  {
+		reCmp = false
+		for i := 0; i < ProNumber; i++ {
+			if !book[i] {
+				if ProSources[i].getSourceForSuccess(OsSources) {
+					queue[count] = i
+					mergeForOsSource(ProSources[i].Allocation)
+					count++
+					reCmp = true
+					book[i] = true
+				}
+			}
+			if count >=  ProNumber{
+				break
+			}
+		}
+		if count >= ProNumber {
+			reCmp = false
+		}
+	}
+	return count >= ProNumber - 1, queue
+}
+
+
+func main() {
+	flag, queue := checkSecurity()
+	if flag {
+		fmt.Println("source is Success !!!")
+		fmt.Print("security order is : ")
+		for i := 0; i < len(queue); i++ {
+			fmt.Print(queue[i], " ")
+		}
+	} else {
+		fmt.Println("dead lock")
+	}
+}    
+
+
+            package main
+
+import "log"
+
+func CheckErrorForExit(err error)  {
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func CheckErrorForExitOfMsg(err error, msg ...interface{})  {
+	if err != nil {
+		log.Fatalln("发生了错误: ",msg,"\n", err)
+	}
+}
+
+func CheckError(err error) {
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func CheckErrorOfMsg(err error, msg ...interface{}) {
+	if err != nil {
+		log.Println("发生了错误: ",msg,"\n", err)
+	}
+}
+        
+
+
+
+
+    

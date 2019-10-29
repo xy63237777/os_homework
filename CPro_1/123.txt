@@ -1,0 +1,14 @@
+      /*
+hello ni hao a
+123123
+*/
+
+int main() {
+    //hello
+    int a = 3;
+    double abc = 5.42;
+    for (int i = 0; i || 5; i++ {
+        int b = 3;
+    }
+    return 0;
+}
